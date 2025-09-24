@@ -1,0 +1,1990 @@
+{
+  "source": {
+    "hash": "0x4bceeead468ce44d03bc9bb995705954da1d3b7d88cffe4547d8d738633de8bf",
+    "language": "ink! 6.0.0-alpha.4",
+    "compiler": "rustc 1.89.0-nightly",
+    "build_info": {
+      "build_mode": "Release",
+      "cargo_contract_version": "6.0.0-alpha.3",
+      "rust_toolchain": "nightly-aarch64-apple-darwin"
+    }
+  },
+  "contract": {
+    "name": "inkfundme",
+    "version": "1.0.0",
+    "authors": [
+      "InkFundMe Team"
+    ]
+  },
+  "image": null,
+  "spec": {
+    "constructors": [
+      {
+        "args": [
+          {
+            "label": "token_address",
+            "type": {
+              "displayName": [
+                "Address"
+              ],
+              "type": 0
+            }
+          }
+        ],
+        "default": false,
+        "docs": [
+          "Alternative constructor that accepts an existing ERC20 token address",
+          "",
+          "# Parameters",
+          "- `token_address`: Address of an existing ERC20 token contract",
+          "",
+          "# Returns",
+          "New InkFundMe contract instance using the provided token"
+        ],
+        "label": "new",
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink_primitives",
+            "ConstructorResult"
+          ],
+          "type": 22
+        },
+        "selector": "0x9bae9d5e"
+      }
+    ],
+    "docs": [],
+    "environment": {
+      "accountId": {
+        "displayName": [
+          "AccountId"
+        ],
+        "type": 38
+      },
+      "balance": {
+        "displayName": [
+          "Balance"
+        ],
+        "type": 40
+      },
+      "blockNumber": {
+        "displayName": [
+          "BlockNumber"
+        ],
+        "type": 3
+      },
+      "hash": {
+        "displayName": [
+          "Hash"
+        ],
+        "type": 41
+      },
+      "nativeToEthRatio": 100000000,
+      "staticBufferSize": 16384,
+      "timestamp": {
+        "displayName": [
+          "Timestamp"
+        ],
+        "type": 7
+      }
+    },
+    "events": [
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "label": "id",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 3
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "label": "owner",
+            "type": {
+              "displayName": [
+                "Address"
+              ],
+              "type": 0
+            }
+          },
+          {
+            "docs": [],
+            "indexed": false,
+            "label": "goal",
+            "type": {
+              "displayName": [
+                "U256"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "docs": [],
+            "indexed": false,
+            "label": "deadline",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 7
+            }
+          }
+        ],
+        "docs": [
+          "Events emitted by the contract"
+        ],
+        "label": "CampaignCreated",
+        "module_path": "inkfundme::inkfundme",
+        "signature_topic": "0x4c15ebbb34e64f6808531c941fd082c6562a2a24ac85dc5d8d2e388cd60e2264"
+      },
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "label": "campaign_id",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 3
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "label": "contributor",
+            "type": {
+              "displayName": [
+                "Address"
+              ],
+              "type": 0
+            }
+          },
+          {
+            "docs": [],
+            "indexed": false,
+            "label": "amount",
+            "type": {
+              "displayName": [
+                "U256"
+              ],
+              "type": 5
+            }
+          }
+        ],
+        "docs": [],
+        "label": "ContributionMade",
+        "module_path": "inkfundme::inkfundme",
+        "signature_topic": "0x1a23434cd4348c0e0b2cb85985da6863763563302ea3c88c7d9132d99a9573d9"
+      },
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "label": "campaign_id",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 3
+            }
+          },
+          {
+            "docs": [],
+            "indexed": false,
+            "label": "success",
+            "type": {
+              "displayName": [
+                "bool"
+              ],
+              "type": 8
+            }
+          }
+        ],
+        "docs": [],
+        "label": "CampaignFinalized",
+        "module_path": "inkfundme::inkfundme",
+        "signature_topic": "0x39cf779a860a8ee877a715aedbb823b9479bd5709e3140d3b70cf4ffa5b43b44"
+      },
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "label": "campaign_id",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 3
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "label": "contributor",
+            "type": {
+              "displayName": [
+                "Address"
+              ],
+              "type": 0
+            }
+          },
+          {
+            "docs": [],
+            "indexed": false,
+            "label": "amount",
+            "type": {
+              "displayName": [
+                "U256"
+              ],
+              "type": 5
+            }
+          }
+        ],
+        "docs": [],
+        "label": "RefundClaimed",
+        "module_path": "inkfundme::inkfundme",
+        "signature_topic": "0x2f8a8dd6f533c760ea1aec2d60c8495a66905c4441c9c53c228b408bf7966018"
+      },
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "label": "from",
+            "type": {
+              "displayName": [
+                "Option"
+              ],
+              "type": 37
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "label": "to",
+            "type": {
+              "displayName": [
+                "Option"
+              ],
+              "type": 37
+            }
+          },
+          {
+            "docs": [],
+            "indexed": false,
+            "label": "value",
+            "type": {
+              "displayName": [
+                "U256"
+              ],
+              "type": 5
+            }
+          }
+        ],
+        "docs": [
+          "Event emitted when a token transfer occurs"
+        ],
+        "label": "Transfer",
+        "module_path": "token::token",
+        "signature_topic": "0x2bf04b1fcc64de43ce9704e9ccdc0657018c43d01c3e88bceed23cba23a10f5c"
+      },
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "label": "owner",
+            "type": {
+              "displayName": [
+                "Address"
+              ],
+              "type": 0
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "label": "spender",
+            "type": {
+              "displayName": [
+                "Address"
+              ],
+              "type": 0
+            }
+          },
+          {
+            "docs": [],
+            "indexed": false,
+            "label": "value",
+            "type": {
+              "displayName": [
+                "U256"
+              ],
+              "type": 5
+            }
+          }
+        ],
+        "docs": [
+          "Event emitted when an approval occurs that `spender` is allowed to withdraw",
+          "up to the amount of `value` tokens from `owner`"
+        ],
+        "label": "Approval",
+        "module_path": "token::token",
+        "signature_topic": "0xa1d96b3a6e369c8b0ee68c99cb4406104190a21b35f7ef8fa2bcef30a78efc1a"
+      },
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "label": "to",
+            "type": {
+              "displayName": [
+                "Address"
+              ],
+              "type": 0
+            }
+          },
+          {
+            "docs": [],
+            "indexed": false,
+            "label": "value",
+            "type": {
+              "displayName": [
+                "U256"
+              ],
+              "type": 5
+            }
+          }
+        ],
+        "docs": [
+          "Event emitted when tokens are minted"
+        ],
+        "label": "Mint",
+        "module_path": "token::token",
+        "signature_topic": "0x662d0b487d656be2542e3460efe030eb494a50dda74f83bac7e1f3955ed1be15"
+      }
+    ],
+    "lang_error": {
+      "displayName": [
+        "ink",
+        "LangError"
+      ],
+      "type": 23
+    },
+    "messages": [
+      {
+        "args": [
+          {
+            "label": "amount",
+            "type": {
+              "displayName": [
+                "U256"
+              ],
+              "type": 5
+            }
+          }
+        ],
+        "default": false,
+        "docs": [
+          " Mint tokens for free (faucet functionality for testing)",
+          "",
+          " # Parameters",
+          " - `to`: Address to mint tokens to",
+          " - `amount`: Amount of tokens to mint",
+          "",
+          " # Returns",
+          " Result indicating success or failure"
+        ],
+        "label": "mint_faucet",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 24
+        },
+        "selector": "0x3df2bd38"
+      },
+      {
+        "args": [
+          {
+            "label": "title",
+            "type": {
+              "displayName": [
+                "String"
+              ],
+              "type": 4
+            }
+          },
+          {
+            "label": "description",
+            "type": {
+              "displayName": [
+                "String"
+              ],
+              "type": 4
+            }
+          },
+          {
+            "label": "goal",
+            "type": {
+              "displayName": [
+                "U256"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "label": "deadline",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 7
+            }
+          }
+        ],
+        "default": false,
+        "docs": [
+          " Create a new fundraising campaign",
+          "",
+          " # Parameters",
+          " - `title`: Campaign title",
+          " - `description`: Campaign description",
+          " - `goal`: Fundraising goal in tokens",
+          " - `deadline`: Campaign deadline (timestamp)",
+          "",
+          " # Returns",
+          " Campaign ID of the newly created campaign"
+        ],
+        "label": "create_campaign",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 28
+        },
+        "selector": "0xd75944ac"
+      },
+      {
+        "args": [
+          {
+            "label": "campaign_id",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 3
+            }
+          },
+          {
+            "label": "amount",
+            "type": {
+              "displayName": [
+                "U256"
+              ],
+              "type": 5
+            }
+          }
+        ],
+        "default": false,
+        "docs": [
+          " Contribute tokens to a campaign",
+          "",
+          " # Parameters",
+          " - `campaign_id`: ID of the campaign to contribute to",
+          " - `amount`: Amount of tokens to contribute",
+          "",
+          " # Returns",
+          " Result indicating success or failure"
+        ],
+        "label": "contribute",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 24
+        },
+        "selector": "0x9b3544d0"
+      },
+      {
+        "args": [
+          {
+            "label": "campaign_id",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 3
+            }
+          }
+        ],
+        "default": false,
+        "docs": [
+          " Finalize a campaign (transfer funds to owner or mark as failed)",
+          "",
+          " # Parameters",
+          " - `campaign_id`: ID of the campaign to finalize",
+          "",
+          " # Returns",
+          " Result indicating success or failure"
+        ],
+        "label": "finalize",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 24
+        },
+        "selector": "0x40656e2b"
+      },
+      {
+        "args": [
+          {
+            "label": "campaign_id",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 3
+            }
+          }
+        ],
+        "default": false,
+        "docs": [
+          " Claim refund for a failed campaign",
+          "",
+          " # Parameters",
+          " - `campaign_id`: ID of the failed campaign",
+          "",
+          " # Returns",
+          " Result indicating success or failure"
+        ],
+        "label": "claim_refund",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 24
+        },
+        "selector": "0x1f5206a6"
+      },
+      {
+        "args": [
+          {
+            "label": "campaign_id",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 3
+            }
+          }
+        ],
+        "default": false,
+        "docs": [
+          " Get campaign details by ID",
+          "",
+          " # Parameters",
+          " - `campaign_id`: ID of the campaign",
+          "",
+          " # Returns",
+          " Campaign details or error if not found"
+        ],
+        "label": "get_campaign",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 30
+        },
+        "selector": "0x342bec92"
+      },
+      {
+        "args": [],
+        "default": false,
+        "docs": [
+          " Get all campaigns",
+          "",
+          " # Returns",
+          " Vector of all campaigns"
+        ],
+        "label": "get_all_campaigns",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 32
+        },
+        "selector": "0xb289d6ec"
+      },
+      {
+        "args": [
+          {
+            "label": "campaign_id",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 3
+            }
+          },
+          {
+            "label": "contributor",
+            "type": {
+              "displayName": [
+                "Address"
+              ],
+              "type": 0
+            }
+          }
+        ],
+        "default": false,
+        "docs": [
+          " Get contributor's contribution amount for a specific campaign",
+          "",
+          " # Parameters",
+          " - `campaign_id`: ID of the campaign",
+          " - `contributor`: Address of the contributor",
+          "",
+          " # Returns",
+          " Contribution amount"
+        ],
+        "label": "get_contribution",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 34
+        },
+        "selector": "0xe79557bc"
+      },
+      {
+        "args": [],
+        "default": false,
+        "docs": [
+          " Get the ERC20 token address",
+          "",
+          " # Returns",
+          " Address of the ERC20 token contract"
+        ],
+        "label": "get_token_address",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 35
+        },
+        "selector": "0xc004fc23"
+      },
+      {
+        "args": [],
+        "default": false,
+        "docs": [
+          " Get total number of campaigns",
+          "",
+          " # Returns",
+          " Total number of campaigns created"
+        ],
+        "label": "get_campaign_count",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 36
+        },
+        "selector": "0x9688dabf"
+      }
+    ]
+  },
+  "storage": {
+    "root": {
+      "layout": {
+        "struct": {
+          "fields": [
+            {
+              "layout": {
+                "struct": {
+                  "fields": [
+                    {
+                      "layout": {
+                        "struct": {
+                          "fields": [
+                            {
+                              "layout": {
+                                "leaf": {
+                                  "key": "0x00000000",
+                                  "ty": 0
+                                }
+                              },
+                              "name": "addr"
+                            }
+                          ],
+                          "name": "CallBuilder"
+                        }
+                      },
+                      "name": "inner"
+                    }
+                  ],
+                  "name": "TokenRefFor"
+                }
+              },
+              "name": "token_contract"
+            },
+            {
+              "layout": {
+                "root": {
+                  "layout": {
+                    "struct": {
+                      "fields": [
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0xcbd181c4",
+                              "ty": 3
+                            }
+                          },
+                          "name": "id"
+                        },
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0xcbd181c4",
+                              "ty": 4
+                            }
+                          },
+                          "name": "title"
+                        },
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0xcbd181c4",
+                              "ty": 4
+                            }
+                          },
+                          "name": "description"
+                        },
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0xcbd181c4",
+                              "ty": 5
+                            }
+                          },
+                          "name": "goal"
+                        },
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0xcbd181c4",
+                              "ty": 7
+                            }
+                          },
+                          "name": "deadline"
+                        },
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0xcbd181c4",
+                              "ty": 0
+                            }
+                          },
+                          "name": "owner"
+                        },
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0xcbd181c4",
+                              "ty": 5
+                            }
+                          },
+                          "name": "raised"
+                        },
+                        {
+                          "layout": {
+                            "leaf": {
+                              "key": "0xcbd181c4",
+                              "ty": 8
+                            }
+                          },
+                          "name": "completed"
+                        }
+                      ],
+                      "name": "Campaign"
+                    }
+                  },
+                  "root_key": "0xcbd181c4",
+                  "ty": 9
+                }
+              },
+              "name": "campaigns"
+            },
+            {
+              "layout": {
+                "root": {
+                  "layout": {
+                    "leaf": {
+                      "key": "0xf79953dd",
+                      "ty": 5
+                    }
+                  },
+                  "root_key": "0xf79953dd",
+                  "ty": 17
+                }
+              },
+              "name": "contributions"
+            },
+            {
+              "layout": {
+                "leaf": {
+                  "key": "0x00000000",
+                  "ty": 3
+                }
+              },
+              "name": "next_campaign_id"
+            }
+          ],
+          "name": "InkFundMe"
+        }
+      },
+      "root_key": "0x00000000",
+      "ty": 21
+    }
+  },
+  "types": [
+    {
+      "id": 0,
+      "type": {
+        "def": {
+          "composite": {
+            "fields": [
+              {
+                "type": 1,
+                "typeName": "[u8; 20]"
+              }
+            ]
+          }
+        },
+        "path": [
+          "primitive_types",
+          "H160"
+        ]
+      }
+    },
+    {
+      "id": 1,
+      "type": {
+        "def": {
+          "array": {
+            "len": 20,
+            "type": 2
+          }
+        }
+      }
+    },
+    {
+      "id": 2,
+      "type": {
+        "def": {
+          "primitive": "u8"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "type": {
+        "def": {
+          "primitive": "u32"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "type": {
+        "def": {
+          "primitive": "str"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "type": {
+        "def": {
+          "composite": {
+            "fields": [
+              {
+                "type": 6,
+                "typeName": "[u64; 4]"
+              }
+            ]
+          }
+        },
+        "path": [
+          "primitive_types",
+          "U256"
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "type": {
+        "def": {
+          "array": {
+            "len": 4,
+            "type": 7
+          }
+        }
+      }
+    },
+    {
+      "id": 7,
+      "type": {
+        "def": {
+          "primitive": "u64"
+        }
+      }
+    },
+    {
+      "id": 8,
+      "type": {
+        "def": {
+          "primitive": "bool"
+        }
+      }
+    },
+    {
+      "id": 9,
+      "type": {
+        "def": {
+          "composite": {
+            "fields": [
+              {
+                "name": "len",
+                "type": 15,
+                "typeName": "Lazy<u32, KeyType>"
+              },
+              {
+                "name": "elements",
+                "type": 16,
+                "typeName": "Mapping<u32, V, KeyType>"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "V",
+            "type": 10
+          },
+          {
+            "name": "KeyType",
+            "type": 11
+          }
+        ],
+        "path": [
+          "ink_storage",
+          "lazy",
+          "vec",
+          "StorageVec"
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "type": {
+        "def": {
+          "composite": {
+            "fields": [
+              {
+                "name": "id",
+                "type": 3,
+                "typeName": "u32"
+              },
+              {
+                "name": "title",
+                "type": 4,
+                "typeName": "String"
+              },
+              {
+                "name": "description",
+                "type": 4,
+                "typeName": "String"
+              },
+              {
+                "name": "goal",
+                "type": 5,
+                "typeName": "U256"
+              },
+              {
+                "name": "deadline",
+                "type": 7,
+                "typeName": "u64"
+              },
+              {
+                "name": "owner",
+                "type": 0,
+                "typeName": "Address"
+              },
+              {
+                "name": "raised",
+                "type": 5,
+                "typeName": "U256"
+              },
+              {
+                "name": "completed",
+                "type": 8,
+                "typeName": "bool"
+              }
+            ]
+          }
+        },
+        "path": [
+          "inkfundme",
+          "inkfundme",
+          "Campaign"
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "type": {
+        "def": {
+          "composite": {}
+        },
+        "params": [
+          {
+            "name": "L",
+            "type": 12
+          },
+          {
+            "name": "R",
+            "type": 13
+          }
+        ],
+        "path": [
+          "ink_storage_traits",
+          "impls",
+          "ResolverKey"
+        ]
+      }
+    },
+    {
+      "id": 12,
+      "type": {
+        "def": {
+          "composite": {}
+        },
+        "path": [
+          "ink_storage_traits",
+          "impls",
+          "AutoKey"
+        ]
+      }
+    },
+    {
+      "id": 13,
+      "type": {
+        "def": {
+          "composite": {}
+        },
+        "params": [
+          {
+            "name": "ParentKey",
+            "type": 14
+          }
+        ],
+        "path": [
+          "ink_storage_traits",
+          "impls",
+          "ManualKey"
+        ]
+      }
+    },
+    {
+      "id": 14,
+      "type": {
+        "def": {
+          "tuple": []
+        }
+      }
+    },
+    {
+      "id": 15,
+      "type": {
+        "def": {
+          "composite": {}
+        },
+        "params": [
+          {
+            "name": "V",
+            "type": 3
+          },
+          {
+            "name": "KeyType",
+            "type": 11
+          }
+        ],
+        "path": [
+          "ink_storage",
+          "lazy",
+          "Lazy"
+        ]
+      }
+    },
+    {
+      "id": 16,
+      "type": {
+        "def": {
+          "composite": {}
+        },
+        "params": [
+          {
+            "name": "K",
+            "type": 3
+          },
+          {
+            "name": "V",
+            "type": 10
+          },
+          {
+            "name": "KeyType",
+            "type": 11
+          }
+        ],
+        "path": [
+          "ink_storage",
+          "lazy",
+          "mapping",
+          "Mapping"
+        ]
+      }
+    },
+    {
+      "id": 17,
+      "type": {
+        "def": {
+          "composite": {}
+        },
+        "params": [
+          {
+            "name": "K",
+            "type": 18
+          },
+          {
+            "name": "V",
+            "type": 5
+          },
+          {
+            "name": "KeyType",
+            "type": 19
+          }
+        ],
+        "path": [
+          "ink_storage",
+          "lazy",
+          "mapping",
+          "Mapping"
+        ]
+      }
+    },
+    {
+      "id": 18,
+      "type": {
+        "def": {
+          "tuple": [
+            3,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "id": 19,
+      "type": {
+        "def": {
+          "composite": {}
+        },
+        "params": [
+          {
+            "name": "L",
+            "type": 12
+          },
+          {
+            "name": "R",
+            "type": 20
+          }
+        ],
+        "path": [
+          "ink_storage_traits",
+          "impls",
+          "ResolverKey"
+        ]
+      }
+    },
+    {
+      "id": 20,
+      "type": {
+        "def": {
+          "composite": {}
+        },
+        "params": [
+          {
+            "name": "ParentKey",
+            "type": 14
+          }
+        ],
+        "path": [
+          "ink_storage_traits",
+          "impls",
+          "ManualKey"
+        ]
+      }
+    },
+    {
+      "id": 21,
+      "type": {
+        "def": {
+          "composite": {
+            "fields": [
+              {
+                "name": "token_contract",
+                "type": 0,
+                "typeName": "<TokenRef as::ink::storage::traits::AutoStorableHint<::ink::\nstorage::traits::ManualKey<1754571682u32, ()>,>>::Type"
+              },
+              {
+                "name": "campaigns",
+                "type": 9,
+                "typeName": "<StorageVec<Campaign> as::ink::storage::traits::AutoStorableHint<\n::ink::storage::traits::ManualKey<3296842187u32, ()>,>>::Type"
+              },
+              {
+                "name": "contributions",
+                "type": 17,
+                "typeName": "<Mapping<(u32, Address), U256> as::ink::storage::traits::\nAutoStorableHint<::ink::storage::traits::ManualKey<3713243639u32,\n()>,>>::Type"
+              },
+              {
+                "name": "next_campaign_id",
+                "type": 3,
+                "typeName": "<u32 as::ink::storage::traits::AutoStorableHint<::ink::storage\n::traits::ManualKey<2374317998u32, ()>,>>::Type"
+              }
+            ]
+          }
+        },
+        "path": [
+          "inkfundme",
+          "inkfundme",
+          "InkFundMe"
+        ]
+      }
+    },
+    {
+      "id": 22,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 14
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 23
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 14
+          },
+          {
+            "name": "E",
+            "type": 23
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 23,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "index": 1,
+                "name": "CouldNotReadInput"
+              }
+            ]
+          }
+        },
+        "path": [
+          "ink_primitives",
+          "LangError"
+        ]
+      }
+    },
+    {
+      "id": 24,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 25
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 23
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 25
+          },
+          {
+            "name": "E",
+            "type": 23
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 25,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 14
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 26
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 14
+          },
+          {
+            "name": "E",
+            "type": 26
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 26,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "index": 0,
+                "name": "CampaignNotFound"
+              },
+              {
+                "index": 1,
+                "name": "DeadlineNotReached"
+              },
+              {
+                "index": 2,
+                "name": "DeadlineReached"
+              },
+              {
+                "index": 3,
+                "name": "CampaignCompleted"
+              },
+              {
+                "index": 4,
+                "name": "GoalNotMet"
+              },
+              {
+                "index": 5,
+                "name": "NoContribution"
+              },
+              {
+                "index": 6,
+                "name": "OnlyOwner"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 27,
+                    "typeName": "TokenError"
+                  }
+                ],
+                "index": 7,
+                "name": "TokenError"
+              },
+              {
+                "index": 8,
+                "name": "InvalidParameters"
+              }
+            ]
+          }
+        },
+        "path": [
+          "inkfundme",
+          "inkfundme",
+          "Error"
+        ]
+      }
+    },
+    {
+      "id": 27,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "index": 0,
+                "name": "InsufficientBalance"
+              },
+              {
+                "index": 1,
+                "name": "InsufficientAllowance"
+              },
+              {
+                "index": 2,
+                "name": "Overflow"
+              }
+            ]
+          }
+        },
+        "path": [
+          "token",
+          "token",
+          "Error"
+        ]
+      }
+    },
+    {
+      "id": 28,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 29
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 23
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 29
+          },
+          {
+            "name": "E",
+            "type": 23
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 29,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 3
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 26
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 3
+          },
+          {
+            "name": "E",
+            "type": 26
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 30,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 31
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 23
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 31
+          },
+          {
+            "name": "E",
+            "type": 23
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 31,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 10
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 26
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 10
+          },
+          {
+            "name": "E",
+            "type": 26
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 32,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 33
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 23
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 33
+          },
+          {
+            "name": "E",
+            "type": 23
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 33,
+      "type": {
+        "def": {
+          "sequence": {
+            "type": 10
+          }
+        }
+      }
+    },
+    {
+      "id": 34,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 5
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 23
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 5
+          },
+          {
+            "name": "E",
+            "type": 23
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 35,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 0
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 23
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 0
+          },
+          {
+            "name": "E",
+            "type": 23
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 36,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 3
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 23
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 3
+          },
+          {
+            "name": "E",
+            "type": 23
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 37,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "index": 0,
+                "name": "None"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 0
+                  }
+                ],
+                "index": 1,
+                "name": "Some"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 0
+          }
+        ],
+        "path": [
+          "Option"
+        ]
+      }
+    },
+    {
+      "id": 38,
+      "type": {
+        "def": {
+          "composite": {
+            "fields": [
+              {
+                "type": 39,
+                "typeName": "[u8; 32]"
+              }
+            ]
+          }
+        },
+        "path": [
+          "ink_primitives",
+          "types",
+          "AccountId"
+        ]
+      }
+    },
+    {
+      "id": 39,
+      "type": {
+        "def": {
+          "array": {
+            "len": 32,
+            "type": 2
+          }
+        }
+      }
+    },
+    {
+      "id": 40,
+      "type": {
+        "def": {
+          "primitive": "u128"
+        }
+      }
+    },
+    {
+      "id": 41,
+      "type": {
+        "def": {
+          "composite": {
+            "fields": [
+              {
+                "type": 39,
+                "typeName": "[u8; 32]"
+              }
+            ]
+          }
+        },
+        "path": [
+          "ink_primitives",
+          "types",
+          "Hash"
+        ]
+      }
+    }
+  ],
+  "version": 6
+}
