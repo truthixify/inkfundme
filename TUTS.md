@@ -20,7 +20,7 @@ At a high level, the project consists of:
 - **Ink! smart contract**: Defines campaigns, tracks contributions, and enforces rules.  
 - **React/Next.js frontend**: Lets users create and explore campaigns through a modern interface.  
 - **Polkadot API (PAPI)**: Connects the contract to the frontend.  
-- **Netlify hosting**: Makes the app accessible to anyone.  
+- **Vercel hosting**: Makes the app accessible to anyone.  
 
 Picture this: users can launch campaigns for causes they care about, while contributors browse, donate, and track progress. The smart contract guarantees transparent rules, and the frontend makes the experience intuitive.  
 
@@ -38,7 +38,7 @@ Before starting, make sure you have these installed:
 - **Pop CLI** – tool for compiling and deploying ink! contracts.  
 - **Polkadot.js extension** – browser wallet for interacting with the testnet.  
 - **GitHub** – for managing the repo.  
-- **Netlify** – to host the frontend.  
+- **Vercel** – to host the frontend.  
 
 👉 If you’re missing any, install them before continuing.  
 
@@ -612,9 +612,9 @@ export function ContractCard() {
 
 ---
 
-## Deployment to Netlify
+## Deployment to Vercel
 
-To share your dApp, deploy the frontend to Netlify:
+To share your dApp, deploy the frontend to Vercel:
 
 1. **Build the Frontend**:
    ```bash
@@ -624,16 +624,16 @@ To share your dApp, deploy the frontend to Netlify:
    ```
    This generates a static site in `frontend/out/`.
 
-2. **Deploy to Netlify**:
-   - Sign in to [Netlify](https://www.netlify.com/) and select "New site from Git."
+2. **Deploy to Vercel**:
+   - Sign in to [Vercel](https://www.vercel.com/) and select "New site from Git."
    - Connect your GitHub account and choose the `truthixify/inkfundme` repository.
    - Set build settings:
      - Build command: `cd frontend && bun run build && bun run export`
      - Publish directory: `frontend/out`
-   - Deploy the site. Netlify provides a URL (e.g., `https://inkfundme.netlify.app`).
+   - Deploy the site. Vercel provides a URL (e.g., `https://inkfundme.vercel.app`).
 
 3. **Test the Deployed App**:
-   - Visit the Netlify URL and connect your Polkadot.js wallet.
+   - Visit the Vercel URL and connect your Polkadot.js wallet.
    - Verify interaction with the Passet Hub testnet.
   
 ---
@@ -697,7 +697,7 @@ Enhance the dApp with:
 - [ReactiveDOT](https://reactivedot.dev/)
 - [Polkadot.js API](https://polkadot.js.org/docs/api/)
 - [Source Code](https://github.com/truthixify/inkfundme)
-- [Live Demo](https://inkfundme.netlify.app) (Replace with your Netlify URL)
+- [Live Demo](https://inkfundme.vercel.app) (Replace with your Vercel URL)
 
 ---
 
