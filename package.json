@@ -19,7 +19,7 @@
     "node": "bun run -F contracts node",
     "dev-and-node": "concurrently \"bun run dev\" \"bun run node\" --names \"next,node\" --kill-others",
     "codegen": "bun run -F contracts codegen",
-    "build": "bun run -F frontend build",
+    "build": "bun run codegen && bun run -F frontend build",
     "build:standalone": "bun run codegen && bun run -F frontend build:standalone",
     "start": "bun run -F frontend start",
     "test": "bun run -F contracts test",
