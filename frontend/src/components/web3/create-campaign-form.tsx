@@ -17,7 +17,7 @@ interface CreateCampaignFormProps {
     name: string
     symbol: string
     decimals: number
-    totalSupply: any
+    totalSupply: bigint
   } | null
 }
 
@@ -53,7 +53,11 @@ export function CreateCampaignForm({ onCampaignCreated, tokenInfo }: CreateCampa
 
     try {
       const sdk = createReviveSdk(api as ReviveSdkTypedApi, inkFundMe.contract)
-      const contractAddress = inkFundMe.evmAddresses[chain as keyof typeof inkFundMe.evmAddresses]
+      const contractAddress =
+        inkFundMe.evmAddresses[
+          chain === "passethub" ? "passetHub" : (chain as keyof typeof inkFundMe.evmAddresses)
+        ]
+
       if (!contractAddress) {
         toast.error("Contract not deployed on this chain")
         return
@@ -103,16 +107,29 @@ export function CreateCampaignForm({ onCampaignCreated, tokenInfo }: CreateCampa
 
           // Notify parent component
           onCampaignCreated?.()
+
+          return tx
         })
 
       toast.promise(tx, {
         loading: "Creating campaign...",
         success: "Campaign created successfully!",
-        error: "Failed to create campaign",
+        error: (error) => {
+          if (error.message.includes("User denied transaction")) {
+            return "Transaction canceled by user"
+          }
+          return "Failed to create campaign"
+        },
       })
-    } catch (error) {
+
+      await tx
+    } catch (error: any) {
       console.error("Error creating campaign:", error)
-      toast.error("Failed to create campaign")
+      if (error.message.includes("User denied transaction") || error.message.includes("rejected")) {
+        toast.error("Transaction canceled by user")
+      } else {
+        toast.error("Failed to create campaign")
+      }
     } finally {
       setIsLoading(false)
     }

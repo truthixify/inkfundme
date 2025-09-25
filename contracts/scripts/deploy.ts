@@ -1,8 +1,8 @@
 import { contracts } from "@polkadot-api/descriptors"
+import { FixedSizeBinary } from "polkadot-api"
 import { deployContract } from "./utils/deploy-contract"
 import { initApi } from "./utils/init-api"
 import { writeAddresses } from "./utils/write-addresses"
-import { type FixedSizeArray, FixedSizeBinary } from "polkadot-api"
 
 /**
  * This script initializes the Polkadot API client and deploys the contract
@@ -20,16 +20,28 @@ import { type FixedSizeArray, FixedSizeBinary } from "polkadot-api"
 const main = async () => {
   const initResult = await initApi()
 
-  const deployTokenResult = await deployContract(initResult, "token", contracts.inkfundme_token, "new", {
-    name: "INKFUNDME",
-    symbol: "IFE",
-    decimals: 0,
-    initial_supply: [1000000000000n, 0n, 0n, 0n]
-  })
+  const deployTokenResult = await deployContract(
+    initResult,
+    "token",
+    contracts.inkfundme_token,
+    "new",
+    {
+      name: "INKFUNDME",
+      symbol: "IFM",
+      decimals: 0,
+      initial_supply: [1000000000000n, 0n, 0n, 0n],
+    },
+  )
 
-  const deployInkFundMeResult = await deployContract(initResult, "inkfundme", contracts.inkfundme, "new", {
-    token_address: FixedSizeBinary.fromHex(deployTokenResult.evmAddress)
-  })
+  const deployInkFundMeResult = await deployContract(
+    initResult,
+    "inkfundme",
+    contracts.inkfundme,
+    "new",
+    {
+      token_address: FixedSizeBinary.fromHex(deployTokenResult.evmAddress),
+    },
+  )
 
   await writeAddresses({ token: deployTokenResult, inkFundMe: deployInkFundMeResult })
 }

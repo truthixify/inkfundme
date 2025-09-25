@@ -55,13 +55,17 @@ interface CampaignDetailPageProps {
 function CampaignDetailContent({ campaignId }: CampaignDetailPageProps) {
   const [campaign, setCampaign] = useState<Campaign | null>(null)
   const [tokenInfo, setTokenInfo] = useState<TokenInfo | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [initialLoading, setInitialLoading] = useState(true)
+  const [isRefreshing, setIsRefreshing] = useState(false)
   const [contributionAmount, setContributionAmount] = useState("")
   const [isContributing, setIsContributing] = useState(false)
+  const [isApproving, setIsApproving] = useState(false)
   const [isFinalizing, setIsFinalizing] = useState(false)
   const [isClaiming, setIsClaiming] = useState(false)
+  const [isMinting, setIsMinting] = useState(false)
   const [userContribution, setUserContribution] = useState<bigint>(0n)
   const [allowance, setAllowance] = useState<FixedSizeArray<4, bigint>>([0n, 0n, 0n, 0n])
+  const [isInitialLoad, setIsInitialLoad] = useState(true)
 
   const api = useTypedApi()
   const chain = useChainId()
@@ -108,107 +112,126 @@ function CampaignDetailContent({ campaignId }: CampaignDetailPageProps) {
   }
 
   // Load campaign, token data, and allowance
-  const loadData = useCallback(async () => {
-    if (!api || !chain) return
+  const loadData = useCallback(
+    async (isRefresh = false) => {
+      if (!api || !chain) return
 
-    setLoading(true)
-    try {
-      // --- InkFundMe setup ---
-      const inkFundMeSdk = createReviveSdk(api as ReviveSdkTypedApi, inkFundMe.contract)
-      const inkFundMeAddress = inkFundMe.evmAddresses[chain as keyof typeof inkFundMe.evmAddresses]
-      if (!inkFundMeAddress) return
-      const inkFundMeContract = inkFundMeSdk.getContract(inkFundMeAddress)
-
-      // --- Load campaign data ---
-      const campaignResult = await inkFundMeContract.query("get_campaign", {
-        origin: signerAddress || ALICE,
-        data: { campaign_id: campaignId },
-      })
-      if (campaignResult.success) {
-        setCampaign(campaignResult.value.response)
-      }
-
-      // --- Load user contribution (only if signed in) ---
-      if (signerAddress) {
-        const contributionResult = await inkFundMeContract.query("get_contribution", {
-          origin: signerAddress,
-          data: {
-            campaign_id: campaignId,
-            contributor: ss58ToEthereum(signerAddress),
-          },
-        })
-        if (contributionResult.success) {
-          setUserContribution(contributionResult.value.response[0] || 0n)
-        }
+      if (isInitialLoad && !isRefresh) {
+        setInitialLoading(true)
       } else {
-        setUserContribution(0n)
+        setIsRefreshing(true)
       }
 
-      // --- Token setup ---
-      const tokenSdk = createReviveSdk(api as ReviveSdkTypedApi, token.contract)
-      const tokenAddress = token.evmAddresses[chain as keyof typeof token.evmAddresses]
-      if (!tokenAddress) return
-      const tokenContract = tokenSdk.getContract(tokenAddress)
+      try {
+        // --- InkFundMe setup ---
+        const inkFundMeSdk = createReviveSdk(api as ReviveSdkTypedApi, inkFundMe.contract)
+        const inkFundMeAddress =
+          inkFundMe.evmAddresses[
+            chain === "passethub" ? "passetHub" : (chain as keyof typeof inkFundMe.evmAddresses)
+          ]
+        if (!inkFundMeAddress) return
+        const inkFundMeContract = inkFundMeSdk.getContract(inkFundMeAddress)
 
-      // --- Always load base token info ---
-      const [nameResult, symbolResult, decimalsResult, totalSupplyResult] = await Promise.all([
-        tokenContract.query("name", { origin: signerAddress || ALICE }),
-        tokenContract.query("symbol", { origin: signerAddress || ALICE }),
-        tokenContract.query("decimals", { origin: signerAddress || ALICE }),
-        tokenContract.query("total_supply", { origin: signerAddress || ALICE }),
-      ])
+        // --- Load campaign data ---
+        const campaignResult = await inkFundMeContract.query("get_campaign", {
+          origin: signerAddress || ALICE,
+          data: { campaign_id: campaignId },
+        })
+        if (campaignResult.success) {
+          setCampaign(campaignResult.value.response)
+        }
 
-      // --- Defaults for user-specific info ---
-      let userBalance: FixedSizeArray<4, bigint> = [0n, 0n, 0n, 0n]
-      let allowanceValue: FixedSizeArray<4, bigint> = [0n, 0n, 0n, 0n]
-
-      // --- Only query balance + allowance if wallet connected ---
-      if (signerAddress) {
-        const [balanceResult, allowanceResult] = await Promise.all([
-          tokenContract.query("balance_of", {
-            origin: signerAddress,
-            data: { owner: ss58ToEthereum(signerAddress) },
-          }),
-          tokenContract.query("allowance", {
+        // --- Load user contribution (only if signed in) ---
+        if (signerAddress) {
+          const contributionResult = await inkFundMeContract.query("get_contribution", {
             origin: signerAddress,
             data: {
-              owner: ss58ToEthereum(signerAddress),
-              spender: FixedSizeBinary.fromHex(inkFundMeAddress),
+              campaign_id: campaignId,
+              contributor: ss58ToEthereum(signerAddress),
             },
-          }),
+          })
+          if (contributionResult.success) {
+            setUserContribution(contributionResult.value.response[0] || 0n)
+          }
+        } else {
+          setUserContribution(0n)
+        }
+
+        // --- Token setup ---
+        const tokenSdk = createReviveSdk(api as ReviveSdkTypedApi, token.contract)
+        const tokenAddress =
+          token.evmAddresses[
+            chain === "passethub" ? "passetHub" : (chain as keyof typeof inkFundMe.evmAddresses)
+          ]
+        if (!tokenAddress) return
+        const tokenContract = tokenSdk.getContract(tokenAddress)
+
+        // --- Always load base token info ---
+        const [nameResult, symbolResult, decimalsResult, totalSupplyResult] = await Promise.all([
+          tokenContract.query("name", { origin: signerAddress || ALICE }),
+          tokenContract.query("symbol", { origin: signerAddress || ALICE }),
+          tokenContract.query("decimals", { origin: signerAddress || ALICE }),
+          tokenContract.query("total_supply", { origin: signerAddress || ALICE }),
         ])
 
-        if (balanceResult.success) {
-          userBalance = balanceResult.value.response
-        }
-        if (allowanceResult.success) {
-          allowanceValue = allowanceResult.value.response
-        }
-      }
+        // --- Defaults for user-specific info ---
+        let userBalance: FixedSizeArray<4, bigint> = [0n, 0n, 0n, 0n]
+        let allowanceValue: FixedSizeArray<4, bigint> = [0n, 0n, 0n, 0n]
 
-      // --- Update tokenInfo state ---
-      if (
-        nameResult.success &&
-        symbolResult.success &&
-        decimalsResult.success &&
-        totalSupplyResult.success
-      ) {
-        setTokenInfo({
-          name: nameResult.value.response,
-          symbol: symbolResult.value.response,
-          decimals: decimalsResult.value.response,
-          totalSupply: totalSupplyResult.value.response,
-          userBalance,
-        })
-        setAllowance(allowanceValue)
+        // --- Only query balance + allowance if wallet connected ---
+        if (signerAddress) {
+          const [balanceResult, allowanceResult] = await Promise.all([
+            tokenContract.query("balance_of", {
+              origin: signerAddress,
+              data: { owner: ss58ToEthereum(signerAddress) },
+            }),
+            tokenContract.query("allowance", {
+              origin: signerAddress,
+              data: {
+                owner: ss58ToEthereum(signerAddress),
+                spender: FixedSizeBinary.fromHex(inkFundMeAddress),
+              },
+            }),
+          ])
+
+          if (balanceResult.success) {
+            userBalance = balanceResult.value.response
+          }
+          if (allowanceResult.success) {
+            allowanceValue = allowanceResult.value.response
+          }
+        }
+
+        // --- Update tokenInfo state ---
+        if (
+          nameResult.success &&
+          symbolResult.success &&
+          decimalsResult.success &&
+          totalSupplyResult.success
+        ) {
+          setTokenInfo({
+            name: nameResult.value.response,
+            symbol: symbolResult.value.response,
+            decimals: decimalsResult.value.response,
+            totalSupply: totalSupplyResult.value.response,
+            userBalance,
+          })
+          setAllowance(allowanceValue)
+        }
+      } catch (error) {
+        console.error("Error loading campaign data:", error)
+        toast.error("Failed to load campaign data")
+      } finally {
+        if (isInitialLoad && !isRefresh) {
+          setInitialLoading(false)
+          setIsInitialLoad(false)
+        } else {
+          setIsRefreshing(false)
+        }
       }
-    } catch (error) {
-      console.error("Error loading campaign data:", error)
-      toast.error("Failed to load campaign data")
-    } finally {
-      setLoading(false)
-    }
-  }, [api, chain, signerAddress, campaignId])
+    },
+    [api, chain, signerAddress, campaignId],
+  )
 
   useEffect(() => {
     loadData()
@@ -218,10 +241,17 @@ function CampaignDetailContent({ campaignId }: CampaignDetailPageProps) {
   const handleApprove = useCallback(async () => {
     if (!api || !chain || !signer || !signerAddress || !contributionAmount || !tokenInfo) return
 
+    setIsApproving(true)
     try {
       const tokenSdk = createReviveSdk(api as ReviveSdkTypedApi, token.contract)
-      const tokenAddress = token.evmAddresses[chain as keyof typeof token.evmAddresses]
-      const inkFundMeAddress = inkFundMe.evmAddresses[chain as keyof typeof inkFundMe.evmAddresses]
+      const tokenAddress =
+        token.evmAddresses[
+          chain === "passethub" ? "passetHub" : (chain as keyof typeof inkFundMe.evmAddresses)
+        ]
+      const inkFundMeAddress =
+        inkFundMe.evmAddresses[
+          chain === "passethub" ? "passetHub" : (chain as keyof typeof inkFundMe.evmAddresses)
+        ]
       if (!tokenAddress || !inkFundMeAddress) {
         toast.error("Contract address not found")
         return
@@ -247,18 +277,36 @@ function CampaignDetailContent({ campaignId }: CampaignDetailPageProps) {
           },
         })
         .signAndSubmit(signer)
+        .then((tx) => {
+          if (!tx.ok) throw new Error("Failed to approve", { cause: tx.dispatchError })
+          loadData(true)
+          return tx
+        })
 
       toast.promise(approveTx, {
         loading: "Approving amount...",
-        success: () => {
-          loadData()
-          return "Successfully approved!"
+        success: "Successfully approved!",
+        error: (error) => {
+          if (
+            error.message.includes("User denied transaction") ||
+            error.message.includes("rejected")
+          ) {
+            return "Transaction canceled by user"
+          }
+          return "Failed to approve"
         },
-        error: "Failed to approve",
       })
-    } catch (error) {
+
+      await approveTx
+    } catch (error: any) {
       console.error("Error approving tokens:", error)
-      toast.error("Failed to approve tokens")
+      if (error.message.includes("User denied transaction") || error.message.includes("rejected")) {
+        toast.error("Transaction canceled by user")
+      } else {
+        toast.error("Failed to approve tokens")
+      }
+    } finally {
+      setIsApproving(false)
     }
   }, [api, chain, signer, signerAddress, contributionAmount, tokenInfo, loadData])
 
@@ -269,7 +317,10 @@ function CampaignDetailContent({ campaignId }: CampaignDetailPageProps) {
     setIsContributing(true)
     try {
       const sdk = createReviveSdk(api as ReviveSdkTypedApi, inkFundMe.contract)
-      const contractAddress = inkFundMe.evmAddresses[chain as keyof typeof inkFundMe.evmAddresses]
+      const contractAddress =
+        inkFundMe.evmAddresses[
+          chain === "passethub" ? "passetHub" : (chain as keyof typeof inkFundMe.evmAddresses)
+        ]
       if (!contractAddress) {
         toast.error("Contract address not found")
         return
@@ -292,17 +343,32 @@ function CampaignDetailContent({ campaignId }: CampaignDetailPageProps) {
         .then((tx) => {
           if (!tx.ok) throw new Error("Failed to contribute", { cause: tx.dispatchError })
           setContributionAmount("")
-          loadData() // Reload data
+          loadData(true)
+          return tx
         })
 
       toast.promise(tx, {
         loading: "Contributing to campaign...",
         success: "Successfully contributed!",
-        error: "Failed to contribute",
+        error: (error) => {
+          if (
+            error.message.includes("User denied transaction") ||
+            error.message.includes("rejected")
+          ) {
+            return "Transaction canceled by user"
+          }
+          return "Failed to contribute"
+        },
       })
-    } catch (error) {
+
+      await tx
+    } catch (error: any) {
       console.error("Error contributing:", error)
-      toast.error("Failed to contribute")
+      if (error.message.includes("User denied transaction") || error.message.includes("rejected")) {
+        toast.error("Transaction canceled by user")
+      } else {
+        toast.error("Failed to contribute")
+      }
     } finally {
       setIsContributing(false)
     }
@@ -315,7 +381,10 @@ function CampaignDetailContent({ campaignId }: CampaignDetailPageProps) {
     setIsFinalizing(true)
     try {
       const sdk = createReviveSdk(api as ReviveSdkTypedApi, inkFundMe.contract)
-      const contractAddress = inkFundMe.evmAddresses[chain as keyof typeof inkFundMe.evmAddresses]
+      const contractAddress =
+        inkFundMe.evmAddresses[
+          chain === "passethub" ? "passetHub" : (chain as keyof typeof inkFundMe.evmAddresses)
+        ]
       if (!contractAddress) {
         toast.error("Contract address not found")
         return
@@ -338,17 +407,32 @@ function CampaignDetailContent({ campaignId }: CampaignDetailPageProps) {
         .signAndSubmit(signer)
         .then((tx) => {
           if (!tx.ok) throw new Error("Failed to finalize", { cause: tx.dispatchError })
-          loadData() // Reload data
+          loadData(true)
+          return tx
         })
 
       toast.promise(tx, {
         loading: "Finalizing campaign...",
         success: "Successfully finalized!",
-        error: "Failed to finalize",
+        error: (error) => {
+          if (
+            error.message.includes("User denied transaction") ||
+            error.message.includes("rejected")
+          ) {
+            return "Transaction canceled by user"
+          }
+          return "Failed to finalize"
+        },
       })
-    } catch (error) {
+
+      await tx
+    } catch (error: any) {
       console.error("Error finalizing:", error)
-      toast.error("Failed to finalize")
+      if (error.message.includes("User denied transaction") || error.message.includes("rejected")) {
+        toast.error("Transaction canceled by user")
+      } else {
+        toast.error("Failed to finalize")
+      }
     } finally {
       setIsFinalizing(false)
     }
@@ -361,7 +445,10 @@ function CampaignDetailContent({ campaignId }: CampaignDetailPageProps) {
     setIsClaiming(true)
     try {
       const sdk = createReviveSdk(api as ReviveSdkTypedApi, inkFundMe.contract)
-      const contractAddress = inkFundMe.evmAddresses[chain as keyof typeof inkFundMe.evmAddresses]
+      const contractAddress =
+        inkFundMe.evmAddresses[
+          chain === "passethub" ? "passetHub" : (chain as keyof typeof inkFundMe.evmAddresses)
+        ]
       if (!contractAddress) {
         toast.error("Contract address not found")
         return
@@ -384,17 +471,32 @@ function CampaignDetailContent({ campaignId }: CampaignDetailPageProps) {
         .signAndSubmit(signer)
         .then((tx) => {
           if (!tx.ok) throw new Error("Failed to claim refund", { cause: tx.dispatchError })
-          loadData() // Reload data
+          loadData(true)
+          return tx
         })
 
       toast.promise(tx, {
         loading: "Claiming refund...",
         success: "Successfully claimed refund!",
-        error: "Failed to claim refund",
+        error: (error) => {
+          if (
+            error.message.includes("User denied transaction") ||
+            error.message.includes("rejected")
+          ) {
+            return "Transaction canceled by user"
+          }
+          return "Failed to claim refund"
+        },
       })
-    } catch (error) {
+
+      await tx
+    } catch (error: any) {
       console.error("Error claiming refund:", error)
-      toast.error("Failed to claim refund")
+      if (error.message.includes("User denied transaction") || error.message.includes("rejected")) {
+        toast.error("Transaction canceled by user")
+      } else {
+        toast.error("Failed to claim refund")
+      }
     } finally {
       setIsClaiming(false)
     }
@@ -404,10 +506,17 @@ function CampaignDetailContent({ campaignId }: CampaignDetailPageProps) {
   const handleMintTokens = useCallback(async () => {
     if (!api || !chain || !signer || !signerAddress) return
 
+    setIsMinting(true)
     try {
       const sdk = createReviveSdk(api as ReviveSdkTypedApi, inkFundMe.contract)
-      const contractAddress = inkFundMe.evmAddresses[chain as keyof typeof inkFundMe.evmAddresses]
-      if (!contractAddress) return
+      const contractAddress =
+        inkFundMe.evmAddresses[
+          chain === "passethub" ? "passetHub" : (chain as keyof typeof inkFundMe.evmAddresses)
+        ]
+      if (!contractAddress) {
+        toast.error("Contract address not found")
+        return
+      }
       const contract = sdk.getContract(contractAddress)
 
       const isMapped = await sdk.addressIsMapped(signerAddress)
@@ -426,21 +535,38 @@ function CampaignDetailContent({ campaignId }: CampaignDetailPageProps) {
         .signAndSubmit(signer)
         .then((tx) => {
           if (!tx.ok) throw new Error("Failed to mint tokens", { cause: tx.dispatchError })
-          loadData() // Reload data to update balance
+          loadData(true)
+          return tx
         })
 
       toast.promise(tx, {
         loading: "Minting tokens...",
         success: "Successfully minted 1000 tokens!",
-        error: "Failed to mint tokens",
+        error: (error) => {
+          if (
+            error.message.includes("User denied transaction") ||
+            error.message.includes("rejected")
+          ) {
+            return "Transaction canceled by user"
+          }
+          return "Failed to mint tokens"
+        },
       })
-    } catch (error) {
+
+      await tx
+    } catch (error: any) {
       console.error("Error minting tokens:", error)
-      toast.error("Failed to mint tokens")
+      if (error.message.includes("User denied transaction") || error.message.includes("rejected")) {
+        toast.error("Transaction canceled by user")
+      } else {
+        toast.error("Failed to mint tokens")
+      }
+    } finally {
+      setIsMinting(false)
     }
   }, [api, chain, signer, signerAddress, loadData])
 
-  if (loading) {
+  if (initialLoading) {
     return <CardSkeleton />
   }
 
@@ -635,11 +761,11 @@ function CampaignDetailContent({ campaignId }: CampaignDetailPageProps) {
                 </div>
                 <Button
                   onClick={handleMintTokens}
-                  disabled={!signer}
+                  disabled={isMinting || !signer}
                   variant="outline"
                   className="w-full"
                 >
-                  Get Free Tokens (Faucet)
+                  {isMinting ? "Minting..." : "Get Free Tokens (Faucet)"}
                 </Button>
               </CardContent>
             </Card>
@@ -660,7 +786,7 @@ function CampaignDetailContent({ campaignId }: CampaignDetailPageProps) {
                     placeholder="100"
                     value={contributionAmount}
                     onChange={(e) => setContributionAmount(e.target.value)}
-                    disabled={isContributing || !signer}
+                    disabled={isContributing || isApproving || !signer}
                     min="0.01"
                     step="0.01"
                   />
@@ -668,7 +794,7 @@ function CampaignDetailContent({ campaignId }: CampaignDetailPageProps) {
                 {isAllowanceSufficient ? (
                   <Button
                     onClick={handleContribute}
-                    disabled={isContributing || !signer || !contributionAmount}
+                    disabled={isContributing || isApproving || !signer || !contributionAmount}
                     className="w-full"
                   >
                     {isContributing ? "Contributing..." : "Contribute"}
@@ -676,10 +802,10 @@ function CampaignDetailContent({ campaignId }: CampaignDetailPageProps) {
                 ) : (
                   <Button
                     onClick={handleApprove}
-                    disabled={isContributing || !signer || !contributionAmount}
+                    disabled={isApproving || isContributing || !signer || !contributionAmount}
                     className="w-full"
                   >
-                    Approve
+                    {isApproving ? "Approving..." : "Approve"}
                   </Button>
                 )}
                 {!signer && (

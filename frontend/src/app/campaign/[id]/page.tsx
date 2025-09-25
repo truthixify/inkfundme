@@ -9,5 +9,5 @@ interface CampaignPageProps {
 
 export default function CampaignPage({ params }: CampaignPageProps) {
   const unwrappedParams = use(params)
-  return <CampaignDetailPage campaignId={Number.parseInt(unwrappedParams.id)} />
+  return <CampaignDetailPage campaignId={Number.parseInt(unwrappedParams.id, 10)} />
 }

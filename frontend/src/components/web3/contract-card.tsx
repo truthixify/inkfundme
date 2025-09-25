@@ -5,7 +5,6 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { useSignerAndAddress } from "@/hooks/use-signer-and-address"
 import { ALICE } from "@/lib/inkathon/constants"
 import { inkFundMe, token } from "@/lib/inkathon/deployments"
-import { CardSkeleton } from "../layout/skeletons"
 import { Button } from "../ui/button-extended"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
 import { CampaignCard } from "./campaign-card"
@@ -58,7 +57,10 @@ export function ContractCard() {
 
     try {
       const sdk = createReviveSdk(api as ReviveSdkTypedApi, inkFundMe.contract)
-      const contractAddress = inkFundMe.evmAddresses[chain as keyof typeof inkFundMe.evmAddresses]
+      const contractAddress =
+        inkFundMe.evmAddresses[
+          chain === "passethub" ? "passetHub" : (chain as keyof typeof inkFundMe.evmAddresses)
+        ]
       if (!contractAddress) return
       const contract = sdk.getContract(contractAddress)
 
@@ -86,7 +88,10 @@ export function ContractCard() {
 
     try {
       const sdk = createReviveSdk(api as ReviveSdkTypedApi, token.contract)
-      const contractAddress = token.evmAddresses[chain as keyof typeof token.evmAddresses]
+      const contractAddress =
+        token.evmAddresses[
+          chain === "passethub" ? "passetHub" : (chain as keyof typeof inkFundMe.evmAddresses)
+        ]
       if (!contractAddress) return
       const contract = sdk.getContract(contractAddress)
 
@@ -130,8 +135,6 @@ export function ContractCard() {
   useEffect(() => {
     queryContracts()
   }, [queryContracts])
-
-  if (queryIsLoading) return <CardSkeleton />
 
   return (
     <div className="mx-auto w-full max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">

@@ -85,7 +85,7 @@ export function CampaignCard({ campaign, tokenInfo }: CampaignCardProps) {
             <CardTitle className="text-lg">{campaign.title}</CardTitle>
             <p className="text-muted-foreground text-sm">
               {campaign.description.length > 100
-                ? `${campaign.description.slice(100)}...`
+                ? `${campaign.description.slice(0, 100)}...`
                 : campaign.description}
             </p>
           </div>

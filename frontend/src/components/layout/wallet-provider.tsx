@@ -6,11 +6,11 @@ import { type ReactNode, Suspense, useState } from "react"
 import { ButtonSkeleton } from "@/components/layout/skeletons"
 import { WalletDropdown } from "@/components/web3/wallet-dropdown"
 import { config } from "@/lib/reactive-dot/config"
-import type { ChainId } from "@/lib/reactive-dot/custom-types"
+import type { ChainId, WalletAccount } from "@/lib/reactive-dot/custom-types"
 
 export function WalletProviders({ children }: { children: ReactNode }) {
-  const [account, setAccount] = useState<any>(null)
-  const [chainId, setChainId] = useState<ChainId>("dev")
+  const [account, setAccount] = useState<WalletAccount>()
+  const [chainId, setChainId] = useState<ChainId>("passethub")
 
   return (
     <ReactiveDotProvider config={config}>
